@@ -33,7 +33,7 @@ public class MySqlManager implements TestDatabaseManager {
 	private MySQLContainer container;
 
 	@Override
-	public Map<String, Object> process(Class<?> testClass) {
+	public Map<String, Object> start(Class<?> testClass) {
 		WithMySql withMySql = TestContextAnnotationUtils.findMergedAnnotation(testClass, WithMySql.class);
 		if (withMySql == null) {
 			return null;

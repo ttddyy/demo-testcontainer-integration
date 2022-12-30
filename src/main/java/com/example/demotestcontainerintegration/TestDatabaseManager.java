@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public interface TestDatabaseManager {
 
-	Map<String, Object> process(Class<?> testClass);
+	Map<String, Object> start(Class<?> testClass);
 
 	void shutdown();
 }

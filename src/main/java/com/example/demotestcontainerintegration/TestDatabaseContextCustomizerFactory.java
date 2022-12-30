@@ -60,7 +60,7 @@ public class TestDatabaseContextCustomizerFactory implements ContextCustomizerFa
 
 		@Override
 		public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
-			Map<String, Object> properties = this.databaseManager.process(this.testClass);
+			Map<String, Object> properties = this.databaseManager.start(this.testClass);
 			MutablePropertySources sources = context.getEnvironment().getPropertySources();
 			MapPropertySource propertySource = new MapPropertySource("DB property source", properties);
 			sources.addFirst(propertySource);
