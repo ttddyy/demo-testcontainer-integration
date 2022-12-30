@@ -25,4 +25,5 @@ public interface TestDatabaseManager {
 
 	Map<String, Object> process(Class<?> testClass);
 
+	void shutdown();
 }

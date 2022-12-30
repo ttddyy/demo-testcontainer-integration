@@ -73,4 +73,10 @@ public class MySqlManager implements TestDatabaseManager {
 		}
 	}
 
+	@Override
+	public void shutdown() {
+		if (this.container != null && this.container.isRunning()) {
+			this.container.stop();
+		}
+	}
 }

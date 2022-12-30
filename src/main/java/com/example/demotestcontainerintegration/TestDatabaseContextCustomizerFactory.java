@@ -16,12 +16,13 @@
 
 package com.example.demotestcontainerintegration;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -42,26 +43,31 @@ public class TestDatabaseContextCustomizerFactory implements ContextCustomizerFa
 		if (withDatabase == null) {
 			return null;
 		}
-		// TODO: add a lifecycle callback to stop the container
 		Class<? extends TestDatabaseManager> clazz = withDatabase.databaseManager();
 		TestDatabaseManager dbManager = BeanUtils.instantiateClass(clazz);
-		Map<String, Object> properties = dbManager.process(testClass);
-		return new TestDatabaseContextCustomizer(properties);
+		return new TestDatabaseContextCustomizer(testClass, dbManager);
 	}
 
 	static class TestDatabaseContextCustomizer implements ContextCustomizer {
+		private final Class<?> testClass;
 
-		private final Map<String, Object> properties;
+		private final TestDatabaseManager databaseManager;
 
-		public TestDatabaseContextCustomizer(Map<String, Object> properties) {
-			this.properties = properties;
+		public TestDatabaseContextCustomizer(Class<?> testClass, TestDatabaseManager databaseManager) {
+			this.testClass = testClass;
+			this.databaseManager = databaseManager;
 		}
 
 		@Override
 		public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
+			Map<String, Object> properties = this.databaseManager.process(this.testClass);
 			MutablePropertySources sources = context.getEnvironment().getPropertySources();
-			MapPropertySource propertySource = new MapPropertySource("DB property source", this.properties);
+			MapPropertySource propertySource = new MapPropertySource("DB property source", properties);
 			sources.addFirst(propertySource);
+
+			((BeanDefinitionRegistry) context.getBeanFactory()).registerBeanDefinition("testDatabaseManagerShutdown",
+					BeanDefinitionBuilder.genericBeanDefinition(DisposableBean.class, () -> this.databaseManager::shutdown).getBeanDefinition()
+			);
 		}
 	}
 }
