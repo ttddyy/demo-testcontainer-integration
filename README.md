@@ -15,3 +15,8 @@ Using the `ContextCustomizer` infrastructure from spring, the implementation det
 ## Misc
 
 See https://github.com/spring-projects/spring-framework/issues/29729
+
+## Further consideration
+
+* Parallel run
+** When different `MergedContextConfiguration` but with same DB configuration run in parallel

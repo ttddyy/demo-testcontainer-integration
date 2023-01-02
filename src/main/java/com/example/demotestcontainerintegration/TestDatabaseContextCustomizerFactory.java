@@ -69,5 +69,9 @@ public class TestDatabaseContextCustomizerFactory implements ContextCustomizerFa
 					BeanDefinitionBuilder.genericBeanDefinition(DisposableBean.class, () -> this.databaseManager::shutdown).getBeanDefinition()
 			);
 		}
+
+		// TODO: add equality considering the TestDatabaseManager that also should consider the target annotation.
+		// For example, `@WithMySql` with different settings should be considered as different.
+
 	}
 }
